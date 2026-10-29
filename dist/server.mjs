@@ -3400,24 +3400,74 @@ function newRequestId() {
   return `req_${randomBytes3(12).toString("hex")}`;
 }
 async function chatRoutes(app) {
-  app.get("/v1/models", async (request) => {
-    await authenticateRequest(request);
-    const db2 = await getDb();
-    const rows = await db2.select().from(models).where(eq10(models.status, "active"));
+  const PRO_MODELS_DATA = [
+    {
+      id: "pr-echo",
+      name: "Pro Router Echo",
+      object: "model",
+      created: 171e7,
+      owned_by: "prorouter",
+      tier: "Starter",
+      description: "A basic, affordable text-to-text model for everyday questions, short answers, summaries, and simple chat.",
+      pricing: { input_usd_per_million: 0.2, output_usd_per_million: 0.8 }
+    },
+    {
+      id: "pr-swift",
+      name: "Pro Router Swift",
+      object: "model",
+      created: 171e7,
+      owned_by: "prorouter",
+      tier: "Fast",
+      description: "Designed for quick responses, customer support, chatbots, and high-volume applications.",
+      pricing: { input_usd_per_million: 0.3, output_usd_per_million: 1.2 }
+    },
+    {
+      id: "pr-nova",
+      name: "Pro Router Nova",
+      object: "model",
+      created: 171e7,
+      owned_by: "prorouter",
+      tier: "Chat",
+      description: "Your general-purpose premium model for detailed answers, writing, reasoning, and everyday development assistance.",
+      pricing: { input_usd_per_million: 0.5, output_usd_per_million: 2 }
+    },
+    {
+      id: "pr-aura",
+      name: "Pro Router Aura",
+      object: "model",
+      created: 171e7,
+      owned_by: "prorouter",
+      tier: "Writing",
+      description: "Positioned for more advanced reasoning, long-form content, complex instructions, and coding assistance, depending on the configured backend.",
+      pricing: { input_usd_per_million: 0.75, output_usd_per_million: 3 }
+    },
+    {
+      id: "pr-zenith",
+      name: "Pro Router Zenith",
+      object: "model",
+      created: 171e7,
+      owned_by: "prorouter",
+      tier: "Flagship",
+      description: "Your flagship tier for the most demanding text tasks, complex analysis, and coding workflows supported by your chosen backend.",
+      pricing: { input_usd_per_million: 1, output_usd_per_million: 4 }
+    }
+  ];
+  app.get("/v1/models", async (_request, reply) => {
+    reply.header("Access-Control-Allow-Origin", "*");
     return {
       object: "list",
-      data: rows.map((m) => ({ id: m.slug, object: "model", created: Math.floor(m.createdAt.getTime() / 1e3), owned_by: "uno" }))
+      data: PRO_MODELS_DATA
     };
   });
   app.get("/v1/models/:id", async (request, reply) => {
-    await authenticateRequest(request);
+    reply.header("Access-Control-Allow-Origin", "*");
     const { id } = request.params;
-    const db2 = await getDb();
-    const slug2 = id.startsWith("uno/") ? id.slice(4) : id;
-    const rows = await db2.select().from(models).where(eq10(models.slug, slug2));
-    const m = rows[0];
-    if (!m) throw new ApiError("model_not_found", `Model '${id}' not found.`);
-    return reply.send({ id: m.slug, object: "model", created: Math.floor(m.createdAt.getTime() / 1e3), owned_by: "prorouter" });
+    const clean = id.toLowerCase().trim();
+    const found = PRO_MODELS_DATA.find((m) => m.id === clean || clean.includes(m.id.replace("pr-", ""))) || PRO_MODELS_DATA[2];
+    return reply.send({
+      ...found,
+      id: clean || found.id
+    });
   });
   app.post("/v1/chat/completions", async (request, reply) => {
     const requestId = request.requestId || newRequestId();
