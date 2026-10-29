@@ -31,6 +31,7 @@ function isAllowedOrigin(origin: string | undefined): boolean {
     "http://localhost:4100",
     "http://127.0.0.1:4100",
   ];
+  if (origin.includes("vercel.app") || origin.includes("onrender.com")) return true;
   return allowed.includes(origin);
 }
 

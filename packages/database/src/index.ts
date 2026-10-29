@@ -78,3 +78,4 @@ export async function runMigrations(): Promise<void> {
 }
 
 export { schema };
+export { seedDatabase } from "./seed.js";
