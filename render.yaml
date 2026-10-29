@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: prorouter-backend
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: AUTH_SECRET
+        generateValue: true
+      - key: ENCRYPTION_KEY
+        generateValue: true
+      - key: PROVIDER_PROROUTER_GATEWAY_API_KEY
+        sync: false
+      - key: PROVIDER_PROROUTER_GATEWAY_BASE_URL
+        value: https://api.tokenjuice.ai/v1

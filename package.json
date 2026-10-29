@@ -1,26 +1,23 @@
 {
-  "name": "prorouter",
+  "name": "prorouter-backend",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "ProRouter — One API. Every Model.",
+  "description": "ProRouter Backend API Gateway — One API. Every Model.",
   "workspaces": [
     "packages/*",
-    "apps/*"
+    "apps/api"
   ],
   "scripts": {
-    "dev": "concurrently -n api,web -c blue,magenta \"npm run dev -w @pro/api\" \"npm run dev -w @pro/web\"",
-    "dev:api": "npm run dev -w @pro/api",
-    "dev:web": "npm run dev -w @pro/web",
-    "build": "npm run build -w @pro/api && npm run build -w @pro/web",
+    "dev": "npm run dev -w @pro/api",
+    "build": "tsc -p packages/shared && tsc -p packages/database && tsc -p packages/providers && tsc -p packages/routing && tsc -p apps/api",
     "start": "node scripts/start-prod.mjs",
     "start:api": "npm run start -w @pro/api",
-    "start:web": "npm run start -w @pro/web",
     "db:generate": "npx --yes drizzle-kit@0.31.11 generate",
     "db:migrate": "npm run migrate -w @pro/database",
     "db:migrate:mongo": "npm run migrate:mongo -w @pro/database",
     "db:seed": "npm run seed -w @pro/database",
-    "typecheck": "tsc -p packages/shared && tsc -p packages/database && tsc -p packages/providers && tsc -p packages/routing && tsc -p apps/api && tsc -p apps/web",
+    "typecheck": "tsc -p packages/shared && tsc -p packages/database && tsc -p packages/providers && tsc -p packages/routing && tsc -p apps/api",
     "test": "vitest run",
     "test:watch": "vitest",
     "stub": "node scripts/stub-provider.mjs"
