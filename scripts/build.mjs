@@ -30,3 +30,4 @@ await esbuild.build({
   ],
 });
 console.log("[build] Built dist/server.mjs successfully!");
+
